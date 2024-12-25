@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { InvestmentData, MockService } from '../mock.service';
 import * as Highcharts from 'highcharts';
 import { SeriesOptionsType } from 'highcharts';
@@ -15,7 +16,7 @@ export class DashboardComponent implements OnInit {
   assetChartOptions: Highcharts.Options = {};
   performanceChartOptions: Highcharts.Options = {};
 
-  constructor(private mockService: MockService) {}
+  constructor(private mockService: MockService, private router: Router) {}
 
   ngOnInit() {
     this.mockService.investmentData$.subscribe((data: Set<InvestmentData>) => {
@@ -47,6 +48,20 @@ export class DashboardComponent implements OnInit {
           dataLabels: {
             enabled: true,
             format: '{point.name}: {point.percentage:.1f} %',
+          },
+          point: {
+            events: {
+              click: (event: any) => {
+                const selectedAsset = this.receivedData.find(
+                  (data) => data.assetType === event.point.name
+                );
+
+                if (selectedAsset) {
+                  this.mockService.setSelectedInvestment(selectedAsset);
+                  this.router.navigate(['/investment']);
+                }
+              },
+            },
           },
         },
       },
