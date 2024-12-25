@@ -1,0 +1,7 @@
+.active-link {
+    cursor: pointer;
+}
+
+.inactive-link {
+    pointer-events: none;
+}

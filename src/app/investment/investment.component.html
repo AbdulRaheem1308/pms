@@ -1,0 +1,181 @@
+<div class="container d-flex justify-content-center align-items-center mt-5">
+  <div class="w-50 border rounded p-4" style="background-color: #b4b4b4">
+    <h6 class="text-center mt-4" *ngIf="showDashboardLink">
+      You can check your asset allocations and performance in
+      <a
+        (click)="loadDashboard()"
+        [ngClass]="!showForm ? 'active-link' : 'inactive-link'"
+      >
+        Dashboard
+      </a>
+    </h6>
+    <div
+      *ngIf="showMessage"
+      class="alert text-center alert-dismissible fade show"
+      [ngClass]="success ? 'alert-success' : 'alert-danger'"
+      [alertVisibility]="showMessage"
+      role="alert"
+    >
+      {{ success | formatAlert }}
+      <button type="button" class="btn-close" (click)="closeAlert()"></button>
+    </div>
+
+    <h2 class="text-center">Investment Form</h2>
+    <form
+      [formGroup]="investmentForm"
+      (ngSubmit)="onSubmit()"
+      *ngIf="showForm"
+    >
+      <div class="mb-3">
+        <label for="assetType" class="form-label">Asset Type:</label>
+        <select id="assetType" formControlName="assetType" class="form-control">
+          <option value="" disabled selected>Select an asset type</option>
+          <option value="Stocks">Stocks</option>
+          <option value="Bonds">Bonds</option>
+          <option value="Real Estate">Real Estate</option>
+          <option value="Mutual Funds">Mutual Funds</option>
+          <option value="Gold">Gold</option>
+        </select>
+        <div
+          *ngIf="
+            investmentForm.get('assetType')?.invalid &&
+            (investmentForm.get('assetType')?.dirty ||
+              investmentForm.get('assetType')?.touched)
+          "
+          class="text-danger"
+        >
+          <div *ngIf="investmentForm.get('assetType')?.errors?.['required']">
+            Asset type is required
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="quantity" class="form-label">Quantity:</label>
+        <input
+          id="quantity"
+          formControlName="quantity"
+          type="number"
+          class="form-control"
+          required
+        />
+        <div
+          *ngIf="
+            investmentForm.get('quantity')?.invalid &&
+            (investmentForm.get('quantity')?.dirty ||
+              investmentForm.get('quantity')?.touched)
+          "
+          class="text-danger"
+        >
+          <div *ngIf="investmentForm.get('quantity')?.errors?.['required']">
+            Quantity is required
+          </div>
+          <div *ngIf="investmentForm.get('quantity')?.errors?.['min']">
+            Quantity must be at least
+            {{ investmentForm.get('quantity')?.errors?.['min'].min }}.
+          </div>
+          <div *ngIf="investmentForm.get('quantity')?.errors?.['max']">
+            Quantity cannot exceed
+            {{ investmentForm.get('quantity')?.errors?.['max'].max }}.
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="purchasePrice" class="form-label">Purchase Price:</label>
+        <input
+          id="purchasePrice"
+          formControlName="purchasePrice"
+          type="number"
+          class="form-control"
+          required
+        />
+        <div
+          *ngIf="
+            investmentForm.get('purchasePrice')?.invalid &&
+            (investmentForm.get('purchasePrice')?.dirty ||
+              investmentForm.get('purchasePrice')?.touched)
+          "
+          class="text-danger"
+        >
+          <div
+            *ngIf="investmentForm.get('purchasePrice')?.errors?.['required']"
+          >
+            Purchase price is required
+          </div>
+          <div *ngIf="investmentForm.get('purchasePrice')?.errors?.['min']">
+            Purchase price must be at least
+            {{ investmentForm.get('purchasePrice')?.errors?.['min'].min }}.
+          </div>
+          <div *ngIf="investmentForm.get('purchasePrice')?.errors?.['max']">
+            Purchase price cannot exceed
+            {{ investmentForm.get('purchasePrice')?.errors?.['max'].max }}.
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="purchaseDate" class="form-label">Purchase Date:</label>
+        <input
+          id="purchaseDate"
+          formControlName="purchaseDate"
+          type="date"
+          class="form-control"
+          required
+        />
+        <div
+          *ngIf="
+            investmentForm.get('purchaseDate ')?.invalid &&
+            (investmentForm.get('purchaseDate')?.dirty ||
+              investmentForm.get('purchaseDate')?.touched)
+          "
+          class="text-danger"
+        >
+          <div *ngIf="investmentForm.get('purchaseDate')?.errors?.['required']">
+            Purchase date is required
+          </div>
+          <div
+            *ngIf="investmentForm.get('purchaseDate')?.errors?.['invalidDate']"
+          >
+            Please enter a valid date.
+          </div>
+          <div
+            *ngIf="investmentForm.get('purchaseDate')?.errors?.['futureDate']"
+          >
+            Purchase date cannot be in the future.
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="!investmentForm.valid"
+      >
+        Submit
+      </button>
+    </form>
+
+    <div *ngIf="!showForm">
+      <h4>Your Investment Summary:</h4>
+      <p>Asset Type: {{ submittedInvestment.assetType }}</p>
+      <p>Quantity: {{ submittedInvestment.quantity }}</p>
+      <p>
+        Purchase Date:
+        {{ submittedInvestment.purchaseDate || "N/A" | dateFormat }}
+      </p>
+      <p>
+        Purchase Price:
+        {{ submittedInvestment.purchasePrice || 0 | currencyFormat }}
+      </p>
+
+      <button
+        type="submit"
+        class="btn btn-primary text-center"
+        (click)="showFormHandle()"
+      >
+        Add Another Investment
+      </button>
+    </div>
+  </div>
+</div>
